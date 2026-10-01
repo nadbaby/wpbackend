@@ -4,6 +4,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected');
 const appearanceRoutes = require('./routes/appearance');
+const agentsRoutes = require('./routes/agents');
 const { createUsersTable } = require('./db');
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
 app.use('/api/appearance', appearanceRoutes);
+app.use('/api/agents', agentsRoutes);
 
 // 404 handler
 app.use((req, res) => {

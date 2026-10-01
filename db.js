@@ -1,11 +1,11 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL,
 });
 
 const createUsersTable = async () => {
-    const checkTableQuery = `
+  const checkTableQuery = `
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       username VARCHAR(255) UNIQUE NOT NULL,
@@ -13,15 +13,25 @@ const createUsersTable = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
-    try {
-        await pool.query(checkTableQuery);
-        console.log('Users table ready');
-    } catch (err) {
-        console.error('Error creating users table:', err);
-    }
+  const createAgentProfilesQuery = `
+    CREATE TABLE IF NOT EXISTS agent_profiles (
+      id SERIAL PRIMARY KEY,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      category VARCHAR(100) NOT NULL,
+      features JSONB DEFAULT '[]',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+  try {
+    await pool.query(checkTableQuery);
+    await pool.query(createAgentProfilesQuery);
+    console.log('Database tables ready');
+  } catch (err) {
+    console.error('Error creating database tables:', err);
+  }
 };
 
 module.exports = {
-    pool,
-    createUsersTable,
+  pool,
+  createUsersTable,
 };
