@@ -30,6 +30,7 @@ app.use('/api/appearance', appearanceRoutes);
 app.use('/api/agents', agentsRoutes);
 app.use('/api/orgs', require('./routes/orgs'));
 app.use('/api/media', mediaRoutes);
+app.use('/api/whatsapp', require('./routes/whatsapp'));
 
 // 404 handler
 app.use((req, res) => {
