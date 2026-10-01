@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected');
 const appearanceRoutes = require('./routes/appearance');
 const agentsRoutes = require('./routes/agents');
+const mediaRoutes = require('./routes/media');
 const { createUsersTable } = require('./db');
 
 const app = express();
@@ -27,6 +28,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
 app.use('/api/appearance', appearanceRoutes);
 app.use('/api/agents', agentsRoutes);
+app.use('/api/orgs', require('./routes/orgs'));
+app.use('/api/media', mediaRoutes);
 
 // 404 handler
 app.use((req, res) => {
