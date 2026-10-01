@@ -1,8 +1,12 @@
-const { Pool } = require('pg');
+const { neon } = require('@neondatabase/serverless');
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+// Use Neon serverless HTTP driver (connects via HTTPS on port 443, no TCP)
+const sql = neon(process.env.DATABASE_URL);
+
+// Adapter to keep the same pool.query() interface used throughout the codebase
+const pool = {
+  query: (text, params) => sql(text, params),
+};
 
 const createUsersTable = async () => {
   const checkTableQuery = `
