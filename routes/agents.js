@@ -67,23 +67,19 @@ router.post('/permissions', async (req, res, next) => {
 router.post('/provision', async (req, res, next) => {
     try {
         const { name, email, password, category, features } = req.body;
+        
+        // Import the better-auth instance directly instead of using fetch
+        const { auth } = require('../lib/auth');
 
-        // Call Managed Better Auth to sign up the new user without affecting the admin's browser session
-        const authUrl = process.env.NEON_AUTH_BASE_URL;
-        const neoRes = await fetch(`${authUrl}/sign-up/email`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Origin": req.headers.origin || "http://localhost:5173"
-            },
-            body: JSON.stringify({ name, email, password })
-        });
-
-        if (!neoRes.ok) {
-            const errorText = await neoRes.text();
-            let msg = errorText;
-            try { msg = JSON.parse(errorText).message || errorText; } catch (e) { }
-            return res.status(400).json({ success: false, message: msg });
+        try {
+            await auth.api.signUpEmail({
+                body: { name, email, password }
+            });
+        } catch (authErr) {
+            const message = authErr?.body?.message || authErr?.message || JSON.stringify(authErr);
+            if (!message.toLowerCase().includes('already')) {
+                return res.status(400).json({ success: false, message });
+            }
         }
 
         // Add profile in PostgreSQL
