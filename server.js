@@ -40,21 +40,24 @@ const corsOptions = {
             return callback(null, true);
         }
 
+        // Strip trailing slash so both
+        // "https://wpfrontend-blue.vercel.app" and
+        // "https://wpfrontend-blue.vercel.app/" always pass
+        const normalizedOrigin = origin.replace(/\/$/, "");
+
         const allowedOrigins = [
             ...LOCALHOST_ORIGINS,
-
             ...(process.env.CORS_ORIGIN
                 ? process.env.CORS_ORIGIN
                     .split(",")
-                    .map((o) => o.trim())
+                    .map((o) => o.trim().replace(/\/$/, ""))
                 : []),
         ];
 
-        if (allowedOrigins.includes(origin)) {
+        if (allowedOrigins.includes(normalizedOrigin)) {
             callback(null, true);
         } else {
             console.log("CORS blocked:", origin);
-
             callback(
                 new Error(
                     `CORS: origin '${origin}' not allowed`
