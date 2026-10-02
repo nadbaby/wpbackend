@@ -24,7 +24,7 @@ const LOCALHOST_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:8080",
-
+    "https://wpfrontend-blue.vercel.app/",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
@@ -221,12 +221,14 @@ const startServer = async () => {
             PORT,
             () => {
 
+                const baseURL = process.env.BETTER_AUTH_URL || `http://localhost:${PORT}`;
+
                 console.log(
                     `Server is running on port ${PORT}`
                 );
 
                 console.log(
-                    `Better Auth: http://localhost:${PORT}/api/auth`
+                    `Better Auth: ${baseURL}/api/auth`
                 );
 
                 console.log(
