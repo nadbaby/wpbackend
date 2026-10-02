@@ -96,19 +96,12 @@ app.use(cors(corsOptions));
 // BETTER AUTH
 // ======================================================
 //
-// IMPORTANT:
-// Better Auth MUST be mounted BEFORE express.json()
-// because Better Auth needs access to the raw request body.
-//
-// Express 5:
-// /api/auth/*splat
-//
-// Express 4:
-// /api/auth/*
+// Using regex so ALL sub-paths like /api/auth/sign-in/email
+// are caught before express.json() reads the body stream.
 // ======================================================
 
 app.all(
-    "/api/auth/*splat",
+    /^\/api\/auth(\/.*)?$/,
     toNodeHandler(auth)
 );
 
