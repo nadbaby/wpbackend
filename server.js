@@ -11,9 +11,34 @@ const { createUsersTable } = require('./db');
 const app = express();
 
 // CORS configuration
+const LOCALHOST_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:8080',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+    'http://127.0.0.1:8080',
+];
+
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || '*',
-    credentials: process.env.CORS_CREDENTIALS === 'true',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (e.g. mobile apps, curl, Postman)
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+            ...LOCALHOST_ORIGINS,
+            ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(o => o.trim()) : []),
+        ];
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS: origin '${origin}' not allowed`));
+        }
+    },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     maxAge: 86400, // 24 hours

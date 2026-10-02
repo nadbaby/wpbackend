@@ -1,12 +1,11 @@
-const { neon } = require('@neondatabase/serverless');
+const { Pool, neonConfig } = require('@neondatabase/serverless');
+const ws = require('ws');
 
-// Use Neon serverless HTTP driver (connects via HTTPS on port 443, no TCP)
-const sql = neon(process.env.DATABASE_URL);
+// Use WebSocket for Neon serverless Pool (required in Node.js environments)
+neonConfig.webSocketConstructor = ws;
 
-// Adapter to keep the same pool.query() interface used throughout the codebase
-const pool = {
-  query: (text, params) => sql(text, params),
-};
+// Pool supports the standard pool.query(text, params) interface
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 const createUsersTable = async () => {
   const checkTableQuery = `
