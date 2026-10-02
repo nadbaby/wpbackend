@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected');
 const appearanceRoutes = require('./routes/appearance');
 const agentsRoutes = require('./routes/agents');
@@ -44,12 +43,18 @@ const corsOptions = {
     maxAge: 86400, // 24 hours
 };
 
-// Middleware
+// Middleware (CORS must be first so preflight OPTIONS requests succeed)
 app.use(cors(corsOptions));
+
+// Better Auth handler (Needs to be mounted before express.json() so it can read the raw request body stream)
+const { auth } = require('./lib/auth');
+const { toNodeHandler } = require('better-auth/node');
+app.all(/^\/api\/auth(\/.*)?$/, toNodeHandler(auth));
+
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
+// (authRoutes removed, now handled by Better Auth above)
 app.use('/api/protected', protectedRoutes);
 app.use('/api/appearance', appearanceRoutes);
 app.use('/api/agents', agentsRoutes);
